@@ -17,7 +17,7 @@
                                     </small>
                                 </div>
                                 <span class="badge bg-primary rounded-pill fs-6">
-                                    R$ {{ number_format($gasto->valor, 2, ',', '.') }}
+                                    R$ {{ is_numeric($gasto->valor) ? number_format($gasto->valor, 2, ',', '.') : '0,00' }}
                                 </span>
                             </div>
                         </button>

@@ -8,49 +8,41 @@ use Illuminate\Support\Facades\DB;
 
 class GastoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $dados = Gasto::all();
         return view('home', compact('dados'));  
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('cadastrar');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $dados = new Gasto();
         $dados->descricao = $request->input('descricao');
-        $dados->valor = $request->input('valor');
+        
+        // Tratamento do valor com vírgula
+        $valor = $request->input('valor');
+        $valor = str_replace(',', '.', $valor);
+        $valor = preg_replace('/[^0-9\.]/', '', $valor);
+        $dados->valor = floatval($valor);
+        
         $dados->data = $request->input('data');
         $dados->categoria = $request->input('categoria');
         $dados->formaPag = $request->input('formaPag');
         $dados->save();
+
         return redirect('/gasto')->with('success', 'Novo gasto cadastrado com sucesso');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $dados = Gasto::find($id);
@@ -59,28 +51,28 @@ class GastoController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $dados = Gasto::find($id);
         if (isset($dados)) {
             $dados->descricao = $request->input('descricao');
-            $dados->valor = $request->input('valor');
+            
+            // Tratamento do valor com vírgula no update
+            $valor = $request->input('valor');
+            $valor = str_replace(',', '.', $valor);
+            $valor = preg_replace('/[^0-9\.]/', '', $valor);
+            $dados->valor = floatval($valor);
+            
             $dados->data = $request->input('data');
             $dados->categoria = $request->input('categoria');
             $dados->formaPag = $request->input('formaPag');
             $dados->save();
+
             return redirect('/gasto')->with('success', 'Gasto atualizado com sucesso.');
         }
         return redirect('/gasto')->with('danger', 'Erro ao atualizar gasto');
-
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $dados = Gasto::find($id);
